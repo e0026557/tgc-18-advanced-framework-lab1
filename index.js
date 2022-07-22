@@ -2,6 +2,9 @@
 const express = require('express');
 const hbs = require('hbs');
 const wax = require('wax-on');
+const helpers = require('handlebars-helpers')({
+  handlebars: hbs.handlebars
+})
 
 // Initialise Express app
 const app = express();

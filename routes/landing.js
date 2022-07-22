@@ -1,8 +1,15 @@
 const express = require('express');
 const router = express.Router(); // Create a router object
 
-router.get('/', function (req, res) {
-  res.render('landing/index') // relative to 'views' folder
+// Import in the Poster model
+const { Poster } = require('../models');
+
+router.get('/', async function (req, res) {
+  // Fetch all the posters
+  let posters = await Poster.collection().fetch();
+  res.render('landing/index', {
+    posters: posters.toJSON()
+  }) // relative to 'views' folder
 })
 
 router.get('/about-us', function (req, res) {
