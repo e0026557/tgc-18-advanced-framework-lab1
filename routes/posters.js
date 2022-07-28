@@ -5,6 +5,7 @@ const router = express.Router(); // Create a router object
 // Import in the Poster model
 const { Poster } = require('../models');
 
+// READ
 router.get('/', async function (req, res) {
   // Fetch all the posters
   let posters = await Poster.collection().fetch();
@@ -13,6 +14,7 @@ router.get('/', async function (req, res) {
   }) // relative to 'views' folder
 })
 
+// CREATE
 router.get('/create', function(req, res) {
   const posterForm = createPosterForm();
   res.render('posters/create', {
@@ -43,6 +45,34 @@ router.post('/create', async function(req, res) {
         form: form.toHTML(bootstrapField)
       })
     }
+  })
+})
+
+// UPDATE
+router.get('/:poster_id/update', async function(req, res) {
+  // Get poster to be updated
+  const posterId = req.params.poster_id;
+  const poster = await Poster.where({
+    id: posterId
+  }).fetch({
+    require: true
+  })
+
+  // Create poster form
+  const posterForm = createPosterForm();
+
+  // Fill in poster form with existing values
+  posterForm.fields.title.value = poster.get('title');
+  posterForm.fields.cost.value = poster.get('cost');
+  posterForm.fields.description.value = poster.get('description');
+  posterForm.fields.date.value = poster.get('date');
+  posterForm.fields.stock.value = poster.get('stock');
+  posterForm.fields.height.value = poster.get('height');
+  posterForm.fields.width.value = poster.get('width');
+
+  res.render('posters/update', {
+    form: posterForm.toHTML(bootstrapField),
+    poster: poster.toJSON()
   })
 })
 
