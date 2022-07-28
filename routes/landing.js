@@ -1,4 +1,5 @@
 const express = require('express');
+const { createPosterForm, bootstrapField } = require('../forms');
 const router = express.Router(); // Create a router object
 
 // Import in the Poster model
@@ -10,6 +11,13 @@ router.get('/', async function (req, res) {
   res.render('landing/index', {
     posters: posters.toJSON()
   }) // relative to 'views' folder
+})
+
+router.get('/create', function(req, res) {
+  const posterForm = createPosterForm();
+  res.render('landing/create', {
+    form: posterForm.toHTML(bootstrapField)
+  })
 })
 
 router.get('/about-us', function (req, res) {
