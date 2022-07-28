@@ -3,6 +3,7 @@ const forms = require('forms');
 
 // Create some shortcuts
 const fields = forms.fields;
+const widgets = forms.widgets;
 const validators = forms.validators;
 
 // Implement bootstrap helper function
@@ -43,7 +44,8 @@ const createPosterForm = function () {
     }),
     date: fields.string({
       required: true,
-      errorAfterField: true
+      errorAfterField: true,
+      // widget: widgets.date()
     }),
     stock: fields.string({
       required: true,

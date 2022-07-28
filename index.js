@@ -23,7 +23,9 @@ wax.setLayoutPath('./views/layouts');
 // alternatively:
 // app.use('/', require('./routes/landing'));
 const landingRoutes = require('./routes/landing');
+const posterRoutes = require('./routes/posters')
 app.use('/', landingRoutes);
+app.use('/posters', posterRoutes)
 
 app.listen(3000, function(){
   console.log('Server has started');
