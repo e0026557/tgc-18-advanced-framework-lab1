@@ -36,28 +36,34 @@ const createPosterForm = function () {
     }),
     cost: fields.string({
       required: true,
-      errorAfterField: true
+      errorAfterField: true,
+      validators: [validators.integer(), validators.min(0)]
     }),
     description: fields.string({
       required: true,
       errorAfterField: true
     }),
-    date: fields.string({
+    date: fields.date({
       required: true,
       errorAfterField: true,
-      // widget: widgets.date()
+      widget: widgets.date(),
+      validators: [validators.date()]
     }),
-    stock: fields.string({
+    stock: fields.number({
       required: true,
-      errorAfterField: true
+      errorAfterField: true,
+      widget: widgets.number(), // Only integer inputs allowed
+      validators: [validators.min(0), validators.min(0), validators.digits()]
     }),
-    height: fields.string({
+    height: fields.number({
       required: true,
-      errorAfterField: true
+      errorAfterField: true,
+      validators: [validators.min(0)]
     }),
-    width: fields.string({
+    width: fields.number({
       required: true,
-      errorAfterField: true
+      errorAfterField: true,
+      validators: [validators.matchField(), validators.min(0)]
     })
   })
 }

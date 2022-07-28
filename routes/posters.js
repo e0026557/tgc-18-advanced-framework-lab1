@@ -20,5 +20,31 @@ router.get('/create', function(req, res) {
   })
 })
 
+router.post('/create', async function(req, res) {
+  const posterForm = createPosterForm();
+  posterForm.handle(req, {
+    // Handle success
+    success: async function(form) {
+      const poster = new Poster(); // represents one row in the posters table
+      poster.set('title', form.data.title);
+      poster.set('cost', form.data.cost);
+      poster.set('description', form.data.description);
+      poster.set('date', form.data.date);
+      poster.set('stock', form.data.stock);
+      poster.set('height', form.data.height);
+      poster.set('width', form.data.width);
+      await poster.save();
+      res.redirect('/posters');
+    },
+    // Handle errors
+    error: async function(form) {
+      // Render the create hbs file with the processed form with bootstrap formatted error messages
+      res.render('posters/create', {
+        form: form.toHTML(bootstrapField)
+      })
+    }
+  })
+})
+
 // Export router object for use in other JS files
 module.exports = router;
