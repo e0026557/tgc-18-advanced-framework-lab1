@@ -63,7 +63,7 @@ const createPosterForm = function () {
     width: fields.number({
       required: true,
       errorAfterField: true,
-      validators: [validators.matchField(), validators.min(0)]
+      validators: [validators.min(0)]
     })
   })
 }

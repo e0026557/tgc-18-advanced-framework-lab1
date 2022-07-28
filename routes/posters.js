@@ -76,5 +76,33 @@ router.get('/:poster_id/update', async function(req, res) {
   })
 })
 
+router.post('/:poster_id/update', async function(req, res) {
+  // Get the poster to be updated
+  const poster = await Poster.where({
+    id: req.params.poster_id
+  }).fetch({
+    require: true
+  });
+
+  // Process form
+  const posterForm = createPosterForm();
+  posterForm.handle(req, {
+    // Handle success
+    success: async function(form) {
+      poster.set(form.data); // This works because the name of the column in posters table matches that of the form field name
+      await poster.save();
+
+      res.redirect('/posters');
+    },
+    // Handle error
+    error: async function(form) {
+      res.render('posters/update', {
+        form: form.toHTML(bootstrapField),
+        poster: poster.toJSON()
+      })
+    }
+  })
+})
+
 // Export router object for use in other JS files
 module.exports = router;
