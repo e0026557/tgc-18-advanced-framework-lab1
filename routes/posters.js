@@ -118,5 +118,19 @@ router.get('/:poster_id/delete', async function(req, res) {
   })
 })
 
+router.post('/:poster_id/delete', async function(req, res) {
+  // Get the poster to be deleted
+  const poster = await Poster.where({
+    id: req.params.poster_id
+  }).fetch({
+    require: true
+  });
+
+  // Delete poster
+  await poster.destroy();
+
+  res.redirect('/posters');
+})
+
 // Export router object for use in other JS files
 module.exports = router;
