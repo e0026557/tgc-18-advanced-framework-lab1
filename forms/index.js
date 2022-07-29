@@ -28,7 +28,7 @@ const bootstrapField = function (name, object) {
 };
 
 // Code to define a poster form
-const createPosterForm = function () {
+const createPosterForm = function (mediaProperties) {
   return forms.create({
     title: fields.string({
       required: true,
@@ -64,6 +64,13 @@ const createPosterForm = function () {
       required: true,
       errorAfterField: true,
       validators: [validators.min(0)]
+    }),
+    media_property_id: fields.string({
+      label: 'Media Property',
+      required: true,
+      errorAfterField: true,
+      widget: widgets.select(),
+      choices: mediaProperties
     })
   })
 }

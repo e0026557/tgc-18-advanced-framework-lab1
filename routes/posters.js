@@ -3,27 +3,35 @@ const { createPosterForm, bootstrapField } = require('../forms');
 const router = express.Router(); // Create a router object
 
 // Import in the Poster model
-const { Poster } = require('../models');
+const { Poster, MediaProperty } = require('../models');
 
 // READ
 router.get('/', async function (req, res) {
   // Fetch all the posters
-  let posters = await Poster.collection().fetch();
+  let posters = await Poster.collection().fetch({
+    withRelated: ['mediaProperty']
+  });
   res.render('posters/index', {
     posters: posters.toJSON()
   }) // relative to 'views' folder
 })
 
 // CREATE
-router.get('/create', function(req, res) {
-  const posterForm = createPosterForm();
+router.get('/create', async function(req, res) {
+  // Get all media properties
+  const mediaProperties = await MediaProperty.fetchAll().map( property => [property.get('id'), property.get('name')]);
+
+  const posterForm = createPosterForm(mediaProperties);
   res.render('posters/create', {
     form: posterForm.toHTML(bootstrapField)
   })
 })
 
 router.post('/create', async function(req, res) {
-  const posterForm = createPosterForm();
+  // Get all media properties
+  const mediaProperties = await MediaProperty.fetchAll().map( property => [property.get('id'), property.get('name')]);
+
+  const posterForm = createPosterForm(mediaProperties);
   posterForm.handle(req, {
     // Handle success
     success: async function(form) {
@@ -35,6 +43,8 @@ router.post('/create', async function(req, res) {
       poster.set('stock', form.data.stock);
       poster.set('height', form.data.height);
       poster.set('width', form.data.width);
+      // Add foreign key
+      poster.set('media_property_id', form.data.media_property_id);
       await poster.save();
       res.redirect('/posters');
     },
@@ -58,8 +68,11 @@ router.get('/:poster_id/update', async function(req, res) {
     require: true
   })
 
+  // Get all media properties
+  const mediaProperties = await MediaProperty.fetchAll().map( property => [property.get('id'), property.get('name')]);
+
   // Create poster form
-  const posterForm = createPosterForm();
+  const posterForm = createPosterForm(mediaProperties);
 
   // Fill in poster form with existing values
   posterForm.fields.title.value = poster.get('title');
@@ -69,6 +82,8 @@ router.get('/:poster_id/update', async function(req, res) {
   posterForm.fields.stock.value = poster.get('stock');
   posterForm.fields.height.value = poster.get('height');
   posterForm.fields.width.value = poster.get('width');
+
+  posterForm.fields.media_property_id.value = poster.get('media_property_id')
 
   res.render('posters/update', {
     form: posterForm.toHTML(bootstrapField),
@@ -84,8 +99,11 @@ router.post('/:poster_id/update', async function(req, res) {
     require: true
   });
 
+  // Get all media properties
+  const mediaProperties = await MediaProperty.fetchAll().map( property => [property.get('id'), property.get('name')]);
+
   // Process form
-  const posterForm = createPosterForm();
+  const posterForm = createPosterForm(mediaProperties);
   posterForm.handle(req, {
     // Handle success
     success: async function(form) {
