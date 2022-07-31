@@ -14,6 +14,7 @@
         <th>Height</th>
         <th>Width</th>
         <th>Media Property</th>
+        <th>Tags</th>
         <th></th>
       </tr>
     </thead>
@@ -28,6 +29,11 @@
           <td>{{this.height}}</td>
           <td>{{this.width}}</td>
           <td>{{this.mediaProperty.name}}</td>
+          <td>
+            {{#each this.tags}}
+              <span class="badge bg-primary">{{this.name}}</span>
+            {{/each}}
+          </td>
           <td>
             <a href="/posters/{{this.id}}/update" class="btn btn-primary btn-sm">Update</a>
             <a href="/posters/{{this.id}}/delete" class="btn btn-danger btn-sm">Delete</a>
