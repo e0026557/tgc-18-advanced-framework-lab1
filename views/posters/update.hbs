@@ -1,16 +1,80 @@
 {{#extends 'base'}}
 
 {{#block 'content'}}
-  <h1>Update poster: {{poster.title}}</h1>
-  <form method="post">
-    {{!-- Render form with TRIPLE BRACES --}}
-    {{{form}}}
+<h1>Update poster: {{poster.title}}</h1>
+<form method="post">
+  {{!-- Render form with TRIPLE BRACES --}}
+  {{{form}}}
 
-    {{!-- CSRF --}}
-    <input type="hidden" name="_csrf" value="{{csrfToken}}">
-    
-    <input type="submit" value="Update" class="btn btn-primary">
-  </form>
+  {{!-- Display uploaded image if exist --}}
+  <div>
+    {{#if poster.image_url}}
+    <img src="{{poster.image_url}}" id="uploaded_image">
+    {{else}}
+    <img src="" style="display: none" id="uploaded_image">
+    {{/if}}
+  </div>
+
+  {{!-- Cloudinary widget to upload images --}}
+  <div>
+    <a href="#" class="btn btn-primary" id="upload_widget">Upload</a>
+    <img src="" style="display:none" id="uploaded_image">
+  </div>
+
+  {{!-- CSRF --}}
+  <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+  <input type="submit" value="Update" class="btn btn-primary">
+</form>
+{{/block}}
+
+{{!-- JAVASCRIPT BLOCK --}}
+{{#block 'js'}}
+
+{{!-- Axios --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
+  integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
+  crossorigin="anonymous"></script>
+
+{{!-- Initialise cloudinary --}}
+<script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
+
+{{!-- Get signature --}}
+<script>
+  function generateSignature(callback, params_to_sign) {
+    axios.get('/cloudinary/sign', {
+      params: {
+        params_to_sign
+      }
+    }).then(function (response) {
+      callback(response.data); // callback is given by cloudinary
+    })
+  }
+
+  // Create upload widget
+  const myWidget = cloudinary.createUploadWidget({
+    cloudName: '{{cloudinaryName}}',
+    apiKey: '{{cloudinaryApiKey}}',
+    uploadPreset: '{{cloudinaryPreset}}',
+    uploadSignature: generateSignature // This is a function
+  }, function (error, result) {
+    if (!error && result.event === 'success') {
+      console.log('Done! Here is the image info: ', result.info);
+
+      // Display the uploaded image
+      document.querySelector('#id_image_url').value = result.info.url; // Note that prefix 'id_' is given by caolan form; This is the hidden input
+      document.querySelector('#uploaded_image').src = result.info.url;
+      document.querySelector('#uploaded_image').style.display = 'inline';
+    }
+  })
+
+  // Add event listener to initialise the widget
+  document.querySelector('#upload_widget').addEventListener('click', function (event) {
+    event.preventDefault(); // Prevent scrolling to top of page
+    myWidget.open();
+  })
+</script>
+
 {{/block}}
 
 {{/extends}}

@@ -9,6 +9,7 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const FileStore = require('session-file-store')(session);
 const csrf = require('csurf');
+require('dotenv').config();
 
 // Initialise Express app
 const app = express();
@@ -79,11 +80,12 @@ app.use(function (req, res, next) {
 const landingRoutes = require('./routes/landing');
 const posterRoutes = require('./routes/posters');
 const userRoutes = require('./routes/users');
-const { urlencoded } = require('express');
+const cloudinaryRoutes = require('./routes/cloudinary');
 
 app.use('/', landingRoutes);
-app.use('/posters', posterRoutes)
-app.use('/users', userRoutes)
+app.use('/posters', posterRoutes);
+app.use('/users', userRoutes);
+app.use('/cloudinary', cloudinaryRoutes);
 
 app.listen(3000, function () {
   console.log('Server has started');

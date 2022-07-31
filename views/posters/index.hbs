@@ -15,6 +15,7 @@
         <th>Width</th>
         <th>Media Property</th>
         <th>Tags</th>
+        <th>Image</th>
         <th></th>
       </tr>
     </thead>
@@ -33,6 +34,9 @@
             {{#each this.tags}}
               <span class="badge bg-primary">{{this.name}}</span>
             {{/each}}
+          </td>
+          <td>
+            <img src="{{this.image_url}}" style="height: 50px; width:50px;">
           </td>
           <td>
             <a href="/posters/{{this.id}}/update" class="btn btn-primary btn-sm">Update</a>

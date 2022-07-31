@@ -6,7 +6,7 @@ const router = express.Router(); // Create a router object
 const { Poster, MediaProperty, Tag } = require('../models');
 
 // Import middleware
-const {checkIfAuthenticated} = require('../middlewares');
+const { checkIfAuthenticated } = require('../middlewares');
 
 // READ
 router.get('/', async function (req, res) {
@@ -30,7 +30,11 @@ router.get('/create', checkIfAuthenticated, async function (req, res) {
 
   const posterForm = createPosterForm(mediaProperties, tags);
   res.render('posters/create', {
-    form: posterForm.toHTML(bootstrapField)
+    form: posterForm.toHTML(bootstrapField),
+    // Add cloudinary information
+    cloudinaryName: process.env.CLOUDINARY_NAME,
+    cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+    cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
   })
 })
 
@@ -55,6 +59,9 @@ router.post('/create', checkIfAuthenticated, async function (req, res) {
       poster.set('width', form.data.width);
       // Add foreign key
       poster.set('media_property_id', form.data.media_property_id);
+
+      // Add image_url
+      poster.set('image_url', form.data.image_url);
       await poster.save();
 
       // Save m:m relationship with tags
@@ -71,13 +78,21 @@ router.post('/create', checkIfAuthenticated, async function (req, res) {
     error: async function (form) {
       // Render the create hbs file with the processed form with bootstrap formatted error messages
       res.render('posters/create', {
-        form: form.toHTML(bootstrapField)
+        form: form.toHTML(bootstrapField),
+        // Add cloudinary information
+        cloudinaryName: process.env.CLOUDINARY_NAME,
+        cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+        cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
       })
     },
     empty: async function (form) {
       // Render the create hbs file with the processed form with bootstrap formatted error messages
       res.render('posters/create', {
-        form: form.toHTML(bootstrapField)
+        form: form.toHTML(bootstrapField),
+        // Add cloudinary information
+        cloudinaryName: process.env.CLOUDINARY_NAME,
+        cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+        cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
       })
     }
   })
@@ -114,12 +129,18 @@ router.get('/:poster_id/update', async function (req, res) {
 
   posterForm.fields.media_property_id.value = poster.get('media_property_id')
 
+  posterForm.fields.image_url.value = poster.get('image_url');
+
   let selectedTags = await poster.related('tags').pluck('id');
   posterForm.fields.tags.value = selectedTags;
 
   res.render('posters/update', {
     form: posterForm.toHTML(bootstrapField),
-    poster: poster.toJSON()
+    poster: poster.toJSON(),
+    // Add cloudinary information
+    cloudinaryName: process.env.CLOUDINARY_NAME,
+    cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+    cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
   })
 })
 
