@@ -8,6 +8,7 @@ const helpers = require('handlebars-helpers')({
 const session = require('express-session');
 const flash = require('connect-flash');
 const FileStore = require('session-file-store')(session);
+const csrf = require('csurf');
 
 // Initialise Express app
 const app = express();
@@ -21,6 +22,11 @@ app.set(express.static('public'));
 // Set up wax-on
 wax.on(hbs.handlebars);
 wax.setLayoutPath('./views/layouts');
+
+// Set up form processing (needed for csrf to work)
+app.use(express.urlencoded({
+  extended: false
+}));
 
 // Set up sessions
 app.use(session({
@@ -40,8 +46,30 @@ app.use(function (req, res, next) {
 });
 
 // Share the user data with hbs files
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.locals.user = req.session.user;
+  next();
+})
+
+// Set up CSRF
+app.use(csrf());
+
+// Handle CSRF error
+app.use(function (err, req, res, next) {
+  if (err && err.code === 'EBADCSRFTOKEN') {
+    // Add flash message
+    req.flash('error_messages', 'The form has expired. Please try again');
+
+    res.redirect('back');
+  }
+  else {
+    next();
+  }
+})
+
+// Share CSRF with hbs files
+app.use(function (req, res, next) {
+  res.locals.csrfToken = req.csrfToken();
   next();
 })
 
@@ -51,6 +79,7 @@ app.use(function(req, res, next) {
 const landingRoutes = require('./routes/landing');
 const posterRoutes = require('./routes/posters');
 const userRoutes = require('./routes/users');
+const { urlencoded } = require('express');
 
 app.use('/', landingRoutes);
 app.use('/posters', posterRoutes)

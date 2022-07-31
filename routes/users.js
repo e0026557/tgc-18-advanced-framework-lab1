@@ -143,7 +143,7 @@ router.get('/profile', async function(req, res) {
 })
 
 // Logout
-router.get('logout', function(req, res) {
+router.get('/logout', function(req, res) {
   req.session.user = null;
 
   // Add flash message

@@ -4,6 +4,9 @@
 <h1>Create poster</h1>
 <form method="post">
   {{{form}}}
+
+  {{!-- CSRF --}}
+  <input type="hidden" name="_csrf" value="{{csrfToken}}">
   <input type="submit" value="Create" class="btn btn-primary my-3">
 </form>
 

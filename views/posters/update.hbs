@@ -5,6 +5,10 @@
   <form method="post">
     {{!-- Render form with TRIPLE BRACES --}}
     {{{form}}}
+
+    {{!-- CSRF --}}
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    
     <input type="submit" value="Update" class="btn btn-primary">
   </form>
 {{/block}}

@@ -5,6 +5,10 @@
   <form method="post">
     {{!-- Render form --}}
     {{{form}}}
+
+    {{!-- CSRF --}}
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    
     <input type="submit" value="Register" class="btn btn-primary my-3">
   </form>
 {{/block}}
