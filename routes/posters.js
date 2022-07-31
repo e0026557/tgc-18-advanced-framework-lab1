@@ -55,9 +55,12 @@ router.post('/create', async function (req, res) {
       await poster.save();
 
       // Save m:m relationship with tags
-      if (tags) {
+      if (form.data.tags) {
         await poster.tags().attach(form.data.tags.split(','));
       }
+
+      // Add flash message
+      req.flash("success_messages", `New poster ${poster.get('title')} has been created`);
 
       res.redirect('/posters');
     },
@@ -92,7 +95,7 @@ router.get('/:poster_id/update', async function (req, res) {
   const mediaProperties = await MediaProperty.fetchAll().map(property => [property.get('id'), property.get('name')]);
 
   // Get all tags
-  const tags = await Tag.fetchAll().map( tag => [tag.get('id'), tag.get('name')]);
+  const tags = await Tag.fetchAll().map(tag => [tag.get('id'), tag.get('name')]);
 
   // Create poster form
   const posterForm = createPosterForm(mediaProperties, tags);
@@ -130,14 +133,14 @@ router.post('/:poster_id/update', async function (req, res) {
   const mediaProperties = await MediaProperty.fetchAll().map(property => [property.get('id'), property.get('name')]);
 
   // Get all tags
-  const tags = await Tag.fetchAll().map( tag => [tag.get('id'), tag.get('name')]);
+  const tags = await Tag.fetchAll().map(tag => [tag.get('id'), tag.get('name')]);
 
   // Process form
   const posterForm = createPosterForm(mediaProperties, tags);
   posterForm.handle(req, {
     // Handle success
     success: async function (form) {
-      let {tags, ...posterData} = form.data;
+      let { tags, ...posterData } = form.data;
       poster.set(posterData); // This works because the name of the column in posters table matches that of the form field name
       await poster.save();
 
@@ -146,12 +149,14 @@ router.post('/:poster_id/update', async function (req, res) {
       let existingTagIds = await poster.related('tags').pluck('id'); // Get ids of all tags that are currently in poster
 
       // Remove all tags that are not selected anymore
-      let toRemove = existingTagIds.filter( id => !tagIds.includes(id));
+      let toRemove = existingTagIds.filter(id => !tagIds.includes(id));
       await poster.tags().detach(toRemove);
 
       // Add in all the tags selected in the form
       await poster.tags().attach(tagIds);
-      
+
+      // Add flash message
+      req.flash('success_messages', `Poster ${poster.get('title')} successfully updated`);
 
       res.redirect('/posters');
     },
@@ -163,7 +168,7 @@ router.post('/:poster_id/update', async function (req, res) {
       })
     },
     // Handle empty
-    empty: async function(form) {
+    empty: async function (form) {
       res.render('posters/update', {
         form: form.toHTML(bootstrapField),
         poster: poster.toJSON()
@@ -196,6 +201,9 @@ router.post('/:poster_id/delete', async function (req, res) {
 
   // Delete poster
   await poster.destroy();
+
+  // Add flash message
+  req.flash('success_messages', `Poster ${poster.get('title')} successfully deleted`);
 
   res.redirect('/posters');
 })
