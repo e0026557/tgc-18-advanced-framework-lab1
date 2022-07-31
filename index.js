@@ -5,6 +5,9 @@ const wax = require('wax-on');
 const helpers = require('handlebars-helpers')({
   handlebars: hbs.handlebars
 })
+const session = require('express-session');
+const flash = require('connect-flash');
+const FileStore = require('session-file-store')(session);
 
 // Initialise Express app
 const app = express();
@@ -18,6 +21,14 @@ app.set(express.static('public'));
 // Set up wax-on
 wax.on(hbs.handlebars);
 wax.setLayoutPath('./views/layouts');
+
+// Set up sessions
+app.use(session({
+  store: new FileStore(),
+  secret: 'keyboard cat',
+  resave: false, // whether to recreate session even if there is no change to it
+  saveUninitialized: true // whether to create session if a new browser connects
+}))
 
 // Import routes
 // alternatively:
