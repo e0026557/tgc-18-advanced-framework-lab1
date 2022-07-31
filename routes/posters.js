@@ -5,6 +5,9 @@ const router = express.Router(); // Create a router object
 // Import in the Poster model
 const { Poster, MediaProperty, Tag } = require('../models');
 
+// Import middleware
+const {checkIfAuthenticated} = require('../middlewares');
+
 // READ
 router.get('/', async function (req, res) {
   // Fetch all the posters
@@ -18,7 +21,7 @@ router.get('/', async function (req, res) {
 })
 
 // CREATE
-router.get('/create', async function (req, res) {
+router.get('/create', checkIfAuthenticated, async function (req, res) {
   // Get all media properties
   const mediaProperties = await MediaProperty.fetchAll().map(property => [property.get('id'), property.get('name')]);
 
@@ -31,7 +34,7 @@ router.get('/create', async function (req, res) {
   })
 })
 
-router.post('/create', async function (req, res) {
+router.post('/create', checkIfAuthenticated, async function (req, res) {
   // Get all media properties
   const mediaProperties = await MediaProperty.fetchAll().map(property => [property.get('id'), property.get('name')]);
 

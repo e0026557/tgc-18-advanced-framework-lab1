@@ -33,20 +33,29 @@ app.use(session({
 // Set up flash (requires sessions to work --> set up after sessions)
 app.use(flash());
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.locals.success_messages = req.flash('success_messages');
   res.locals.error_messages = req.flash('error_messages');
   next();
 });
 
+// Share the user data with hbs files
+app.use(function(req, res, next) {
+  res.locals.user = req.session.user;
+  next();
+})
+
 // Import routes
 // alternatively:
 // app.use('/', require('./routes/landing'));
 const landingRoutes = require('./routes/landing');
-const posterRoutes = require('./routes/posters')
+const posterRoutes = require('./routes/posters');
+const userRoutes = require('./routes/users');
+
 app.use('/', landingRoutes);
 app.use('/posters', posterRoutes)
+app.use('/users', userRoutes)
 
-app.listen(3000, function(){
+app.listen(3000, function () {
   console.log('Server has started');
 })
