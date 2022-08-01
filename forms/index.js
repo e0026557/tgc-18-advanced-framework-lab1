@@ -119,9 +119,62 @@ const createLoginForm = function() {
   })
 }
 
+const createSearchForm = function(mediaProperties, tags) {
+  return forms.create({
+    title: fields.string({
+      required: false, // Not a must to search by title
+      errorAfterField: true
+    }),
+    min_cost: fields.number({
+      required: false, // Not a must to search by min cost
+      errorAfterField: false,
+      validators: [validators.integer()]
+    }),
+    max_cost: fields.number({
+      required: false, // Not a must to search by max cost
+      errorAfterField: false,
+      validators: [validators.integer()]
+    }),
+    min_width: fields.number({
+      required: false,
+      errorAfterField: true,
+      validators: [validators.integer()]
+    }),
+    max_width: fields.number({
+      required: false,
+      errorAfterField: true,
+      validators: [validators.integer()]
+    }),
+    min_height: fields.number({
+      required: false,
+      errorAfterField: true,
+      validators: [validators.integer()]
+    }),
+    max_height: fields.number({
+      required: false,
+      errorAfterField: true,
+      validators: [validators.integer()]
+    }),
+    media_property_id: fields.string({
+      label: 'Media Property',
+      required: false, // Not a must to search by media properties
+      errorAfterField: true,
+      choices: mediaProperties,
+      widget: widgets.select()
+    }),
+    tags: fields.string({
+      required: false, // Not a must to search by tags
+      errorAfterField: true,
+      choices: tags,
+      widget: widgets.multipleSelect()
+    })
+  })
+}
+
 module.exports = {
   createPosterForm,
   createRegistrationForm,
   createLoginForm,
+  createSearchForm,
   bootstrapField
 }

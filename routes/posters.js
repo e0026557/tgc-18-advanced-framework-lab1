@@ -1,5 +1,5 @@
 const express = require('express');
-const { createPosterForm, bootstrapField } = require('../forms');
+const { createPosterForm, createSearchForm, bootstrapField } = require('../forms');
 const router = express.Router(); // Create a router object
 
 // Import in the Poster model
@@ -8,16 +8,108 @@ const { Poster, MediaProperty, Tag } = require('../models');
 // Import middleware
 const { checkIfAuthenticated } = require('../middlewares');
 
+// ---------------------------------------
 // READ
-router.get('/', async function (req, res) {
-  // Fetch all the posters
-  let posters = await Poster.collection().fetch({
-    withRelated: ['mediaProperty', 'tags'] // Name of the relationship (function name in model)
-  });
+// router.get('/', async function (req, res) {
+//   // Fetch all the posters
+//   let posters = await Poster.collection().fetch({
+//     withRelated: ['mediaProperty', 'tags'] // Name of the relationship (function name in model)
+//   });
 
-  res.render('posters/index', {
-    posters: posters.toJSON()
-  }) // relative to 'views' folder
+//   res.render('posters/index', {
+//     posters: posters.toJSON()
+//   }) // relative to 'views' folder
+// })
+// ---------------------------------------
+
+// READ (WITH SEARCH ENGINE)
+router.get('/', async function (req, res) {
+  // Get all media properties
+  const mediaProperties = await MediaProperty.fetchAll().map(property => [property.get('id'), property.get('name')]);
+
+  mediaProperties.unshift([0, '--- Any media property ---']); // Append an option to front of array to select all media properties
+
+  // Get all tags
+  const tags = await Tag.fetchAll().map(tag => [tag.get('id'), tag.get('name')]);
+
+  // Create search engine
+  const searchForm = createSearchForm(mediaProperties, tags);
+
+  // Create query builder
+  let query = Poster.collection();
+
+  searchForm.handle(req, {
+    success: async function (form) {
+      if (form.data.title) {
+        query = query.where('title', 'like', `%${form.data.title}%`);
+      }
+
+      if (form.data.min_cost) {
+        query = query.where('cost', '>=', form.data.min_cost);
+      }
+
+      if (form.data.max_cost) {
+        query = query.where('cost', '<=', form.data.max_cost);
+      }
+
+      if (form.data.min_width) {
+        query = query.where('width', '>=', form.data.min_width);
+      }
+
+      if (form.data.max_width) {
+        query = query.where('width', '<=', form.data.max_width);
+      }
+
+      if (form.data.min_height) {
+        query = query.where('height', '>=', form.data.min_height);
+      }
+
+      if (form.data.max_height) {
+        query = query.where('height', '<=', form.data.max_height);
+      }
+
+      if (form.data.media_property_id && form.data.media_property_id !== '0') {
+        query = query.where('media_property_id', '=', form.data.media_property_id);
+      }
+
+      if (form.data.tags) {
+        query.query('join', 'posters_tags', 'posters.id', 'poster_id').where('tag_id', 'in', form.data.tags.split(','));
+      }
+
+      const posters = await query.fetch({
+        withRelated: ['mediaProperty', 'tags']
+      });
+
+      res.render('posters/index', {
+        posters: posters.toJSON(),
+        form: form.toHTML(bootstrapField)
+      }) // relative to 'views' folder
+    },
+    empty: async function (form) {
+      // Fetch all the posters
+      let posters = await query.fetch({
+        withRelated: ['mediaProperty', 'tags'] // Name of the relationship (function name in model)
+      });
+
+      res.render('posters/index', {
+        posters: posters.toJSON(),
+        form: form.toHTML(bootstrapField)
+      }) // relative to 'views' folder
+    },
+    error: async function (form) {
+      // Fetch all the posters
+      let posters = await query.fetch({
+        withRelated: ['mediaProperty', 'tags'] // Name of the relationship (function name in model)
+      });
+
+      res.render('posters/index', {
+        posters: posters.toJSON(),
+        form: form.toHTML(bootstrapField)
+      }) // relative to 'views' folder
+    }
+  })
+
+
 })
 
 // CREATE
