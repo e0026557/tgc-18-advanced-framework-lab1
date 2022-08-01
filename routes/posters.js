@@ -99,7 +99,7 @@ router.post('/create', checkIfAuthenticated, async function (req, res) {
 })
 
 // UPDATE
-router.get('/:poster_id/update', async function (req, res) {
+router.get('/:poster_id/update', checkIfAuthenticated, async function (req, res) {
   // Get poster to be updated
   const posterId = req.params.poster_id;
   const poster = await Poster.where({
@@ -144,7 +144,7 @@ router.get('/:poster_id/update', async function (req, res) {
   })
 })
 
-router.post('/:poster_id/update', async function (req, res) {
+router.post('/:poster_id/update', checkIfAuthenticated, async function (req, res) {
   // Get the poster to be updated
   const poster = await Poster.where({
     id: req.params.poster_id
@@ -202,7 +202,7 @@ router.post('/:poster_id/update', async function (req, res) {
 })
 
 // DELETE
-router.get('/:poster_id/delete', async function (req, res) {
+router.get('/:poster_id/delete', checkIfAuthenticated, async function (req, res) {
   // Get poster to be deleted
   const poster = await Poster.where({
     id: req.params.poster_id
@@ -215,7 +215,7 @@ router.get('/:poster_id/delete', async function (req, res) {
   })
 })
 
-router.post('/:poster_id/delete', async function (req, res) {
+router.post('/:poster_id/delete', checkIfAuthenticated, async function (req, res) {
   // Get the poster to be deleted
   const poster = await Poster.where({
     id: req.params.poster_id
