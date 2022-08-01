@@ -46,7 +46,10 @@
     cloudName: '{{cloudinaryName}}',
     apiKey: '{{cloudinaryApiKey}}',
     uploadPreset: '{{cloudinaryPreset}}',
-    uploadSignature: generateSignature // This is a function
+    uploadSignature: generateSignature, // This is a function
+    cropping: true, // allow cropping of image
+    croppingAspectRatio: 1, // decimal value (width/height)
+    showSkipCropButton: false // enforce cropping
   }, function (error, result) {
     if (!error && result.event === 'success') {
       console.log('Done! Here is the image info: ', result.info);
