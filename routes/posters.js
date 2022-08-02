@@ -289,7 +289,14 @@ router.post('/:poster_id/update', checkIfAuthenticated, async function (req, res
 
       // // Add in all the tags selected in the form
       // await poster.tags().attach(tagIds);
-      await dataLayer.updatePoster(req.params.poster_id, form.data);
+      let result = await dataLayer.updatePoster(req.params.poster_id, form.data);
+
+      // If update failed
+      if (!result) {
+        req.flash('error_messages', 'An error occurred when updating. Please try again');
+        res.redirect('/posters');
+        return;
+      }
 
       // Add flash message
       req.flash('success_messages', `Poster ${poster.get('title')} successfully updated`);
@@ -339,7 +346,14 @@ router.post('/:poster_id/delete', checkIfAuthenticated, async function (req, res
 
   // Delete poster
   // await poster.destroy();
-  await dataLayer.deletePoster(req.params.poster_id);
+  let result = await dataLayer.deletePoster(req.params.poster_id);
+
+  // If delete failed
+  if (!result) {
+    req.flash('error_messages', 'An error occurred when deleting. Please try again');
+    res.redirect('/posters');
+    return;
+  }
 
   // Add flash message
   req.flash('success_messages', `Poster ${poster.get('title')} successfully deleted`);

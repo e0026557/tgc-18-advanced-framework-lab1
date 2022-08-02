@@ -29,14 +29,20 @@ const getTags = async function () {
 }
 
 const findPoster = async function (posterId) {
-  const poster = Poster.where({
-    id: parseInt(posterId)
-  }).fetch({
-    require: true,
-    withRelated: ['mediaProperty', 'tags']
-  });
+  try {
+    const poster = Poster.where({
+      id: parseInt(posterId)
+    }).fetch({
+      require: true,
+      withRelated: ['mediaProperty', 'tags']
+    });
 
-  return poster;
+    return poster;
+  }
+  catch (err) {
+    console.log(err);
+    return null; // Indicate failure 
+  }
 }
 
 const addPoster = async function (data) {
@@ -64,6 +70,11 @@ const updatePoster = async function (posterId, data) {
   // Find poster by id
   const poster = await findPoster(posterId);
 
+  // If poster is not found
+  if (!poster) {
+    return false; // Indicate failure
+  }
+
   // Separate poster data and tags
   let { tags, ...posterData } = data;
 
@@ -87,9 +98,14 @@ const updatePoster = async function (posterId, data) {
   return true; // Indicate success
 }
 
-const deletePoster = async function(posterId) {
+const deletePoster = async function (posterId) {
   // Find poster by id
   const poster = await findPoster(posterId);
+
+  // If poster is not found
+  if (!poster) {
+    return false; // Indicate failure
+  }
 
   // Delete poster
   await poster.destroy();
