@@ -45,11 +45,11 @@ router.get('/', async function (req, res) {
       }
 
       if (form.data.min_cost) {
-        query = query.where('cost', '>=', form.data.min_cost);
+        query = query.where('cost', '>=', form.data.min_cost * 100); // Note that cost is in cents
       }
 
       if (form.data.max_cost) {
-        query = query.where('cost', '<=', form.data.max_cost);
+        query = query.where('cost', '<=', form.data.max_cost * 100); // Note that cost is in cents
       }
 
       if (form.data.min_width) {
