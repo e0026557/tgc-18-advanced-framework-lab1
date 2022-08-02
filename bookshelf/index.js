@@ -1,10 +1,11 @@
 // Set up database connection
 const knex = require('knex')({
   client: "mysql",
-  connection : {
-    user: 'foo',
-    password: 'bar',
-    database: 'posters'
+  connection: {
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
+    host: process.env.DB_HOST
   }
 })
 
