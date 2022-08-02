@@ -32,7 +32,7 @@ app.use(express.urlencoded({
 // Set up sessions
 app.use(session({
   store: new FileStore(),
-  secret: 'keyboard cat',
+  secret: process.env.SESSION_SECRET,
   resave: false, // whether to recreate session even if there is no change to it
   saveUninitialized: true // whether to create session if a new browser connects
 }))
