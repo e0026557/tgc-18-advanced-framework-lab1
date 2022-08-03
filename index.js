@@ -11,6 +11,8 @@ const FileStore = require('session-file-store')(session);
 const csrf = require('csurf');
 require('dotenv').config();
 
+const { getCart } = require('./dal/cart_items');
+
 // Initialise Express app
 const app = express();
 
@@ -52,6 +54,16 @@ app.use(function (req, res, next) {
   next();
 })
 
+// Share shopping cart data across all hbs files
+app.use(async function (req, res, next) {
+  // Check if user has logged in or else no shopping cart to show
+  if (req.session.user) {
+    const cartItems = await getCart(req.session.user.id); // Note: not supposed to use DAL for this
+    res.locals.cartCount = cartItems.toJSON().length;
+  }
+  next();
+})
+
 // Set up CSRF
 app.use(csrf());
 
@@ -74,6 +86,8 @@ app.use(function (req, res, next) {
   next();
 })
 
+const { checkIfAuthenticated } = require('./middlewares');
+
 // Import routes
 // alternatively:
 // app.use('/', require('./routes/landing'));
@@ -81,11 +95,13 @@ const landingRoutes = require('./routes/landing');
 const posterRoutes = require('./routes/posters');
 const userRoutes = require('./routes/users');
 const cloudinaryRoutes = require('./routes/cloudinary');
+const cartRoutes = require('./routes/cart');
 
 app.use('/', landingRoutes);
 app.use('/posters', posterRoutes);
 app.use('/users', userRoutes);
 app.use('/cloudinary', cloudinaryRoutes);
+app.use('/cart', checkIfAuthenticated, cartRoutes); // apply authentication middleware to ensure user is logged in before accessing this route
 
 app.listen(3000, function () {
   console.log('Server has started');

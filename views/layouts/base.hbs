@@ -35,12 +35,13 @@
           {{#if user}}
           Hi, {{user.username}}
 
-          <a href="/users/logout" class="btn btn-primary btn-sm me-3">Logout</a>
+          <a href="/cart" class="btn btn-secondary btn-sm">Cart ({{cartCount}})</a>
+          <a href="/users/logout" class="btn btn-primary btn-sm ms-1 me-3">Logout</a>
 
           {{else}}
           Hi, Guest
 
-          <a href="/users/login" class="btn btn-primary btn-sm me-3">Login</a>
+          <a href="/users/login" class="btn btn-primary btn-sm ms-1 me-3">Login</a>
 
           {{/if}}
         </div>

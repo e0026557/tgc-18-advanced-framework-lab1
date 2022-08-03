@@ -1,4 +1,3 @@
-// TODO
 const { CartItem } = require('../models');
 
 const getCart = async function (userId) {
@@ -15,8 +14,7 @@ const getCart = async function (userId) {
 
 const getCartItem = async function (userId, posterId) {
   // Get a cart item in user's shopping cart
-  return await CartItem.collection
-    .where({
+  return await CartItem.where({
       user_id: userId,
       poster_id: posterId
     })
@@ -54,7 +52,6 @@ const removeFromCart = async function (userId, posterId) {
   }
 }
 
-// TODO: updateQuantity
 const updateQuantity = async function (userId, posterId, newQuantity) {
   // Retrieve cart item to be updated
   const cartItem = await getCartItem(userId, posterId);

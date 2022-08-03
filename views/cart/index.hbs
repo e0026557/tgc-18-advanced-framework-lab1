@@ -1,0 +1,32 @@
+{{#extends 'base'}}
+
+{{#block 'content'}}
+<h1>My Shopping Cart</h1>
+
+<ul class="list-group">
+  {{#each cartItems}}
+  <li class="list-group-item my-3">
+    <h4>{{this.poster.name}}</h4>
+    <h5>Media property: {{this.poster.mediaProperty.name}}</h5>
+    <h5>Cost: ${{divide this.poster.cost 100}}</h5>
+
+    {{!-- Form to update quantity of item --}}
+    <form action="/cart/{{this.poster_id}}/update" method="post">
+      <input type="hidden" name="_csrf" value="{{../csrfToken}}">
+
+      <h5>
+        Qty:
+        <input type="text" name="newQuantity" value="{{this.quantity}}" style="width: 30px">
+        <input type="submit" value="Update Quantity" class="btn btn-primary btn-sm">
+      </h5>
+    </form>
+
+    <div>
+      <a href="/cart/{{this.poster.id}}/remove" class="btn btn-danger btn-sm">Remove</a>
+    </div>
+  </li>
+  {{/each}}
+</ul>
+{{/block}}
+
+{{/extends}}
