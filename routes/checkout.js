@@ -65,4 +65,35 @@ router.get('/cancel', checkIfAuthenticated, function (req, res) {
   res.render('checkout/cancel');
 })
 
+router.post('/process_payment', express.raw({ type: 'application/json' }), async function (req, res) {
+  let payload = req.body; // payment information is inside req.body
+  let endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
+  let sigHeader = req.headers["stripe-signature"]; // when stripe sends us the information, there will be a signature and the key will be 'stripe-signature'
+  let event = null;
+
+  // try to extract out the information and ensures that it is legit (actually comes from Stripe)
+  try {
+    event = Stripe.webhooks.constructEvent(payload, sigHeader, endpointSecret);
+
+    if (event.type == 'checkout.session.completed') {
+      // payment session information
+      let stripeSession = event.data.object;
+      console.log(stripeSession);
+      // metadata information
+      const metadata = JSON.parse(event.data.object.metadata.orders);
+      console.log(metadata);
+      res.send({
+        success: true
+      });
+    }
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500);
+    res.send({
+      error: err.message
+    })
+  }
+})
+
 module.exports = router;
