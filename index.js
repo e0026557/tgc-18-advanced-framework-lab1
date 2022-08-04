@@ -96,12 +96,14 @@ const posterRoutes = require('./routes/posters');
 const userRoutes = require('./routes/users');
 const cloudinaryRoutes = require('./routes/cloudinary');
 const cartRoutes = require('./routes/cart');
+const checkoutRoutes = require('./routes/checkout');
 
 app.use('/', landingRoutes);
 app.use('/posters', posterRoutes);
 app.use('/users', userRoutes);
 app.use('/cloudinary', cloudinaryRoutes);
 app.use('/cart', checkIfAuthenticated, cartRoutes); // apply authentication middleware to ensure user is logged in before accessing this route
+app.use('/checkout', checkoutRoutes);
 
 app.listen(3000, function () {
   console.log('Server has started');
