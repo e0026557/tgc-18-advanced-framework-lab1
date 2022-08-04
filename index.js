@@ -65,7 +65,17 @@ app.use(async function (req, res, next) {
 })
 
 // Set up CSRF
-app.use(csrf());
+// app.use(csrf());
+const csrfInstance = csrf();
+app.use(function (req, res, next) {
+  // Exclude url from CSRF protection
+  if (req.url == '/checkout/process_payment' || req.url.slice(0, 5) == '/api/') {
+    next();
+  }
+  else {
+    csrfInstance(req, res, next);
+  }
+})
 
 // Handle CSRF error
 app.use(function (err, req, res, next) {
@@ -82,7 +92,11 @@ app.use(function (err, req, res, next) {
 
 // Share CSRF with hbs files
 app.use(function (req, res, next) {
-  res.locals.csrfToken = req.csrfToken();
+  // The csrfToken function is available because of app.use(csrf()) or csrfInstance
+  // Check if req.csrfToken is available
+  if (req.csrfToken) {
+    res.locals.csrfToken = req.csrfToken();
+  }
   next();
 })
 
