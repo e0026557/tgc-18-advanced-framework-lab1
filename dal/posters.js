@@ -1,13 +1,6 @@
 // Require the Poster model
 const { Poster, MediaProperty, Tag } = require('../models');
 
-// TODO:
-// getAll : get all the posters
-// getMediaProperties :  retrieve all the media properties
-// getTags : retrieve all the tags
-// addPoster : add a new poster to the database
-// findPoster : retrieve a poster by id
-
 const getAll = async function () {
   const posters = await Poster.collection().fetch({
     withRelated: ['mediaProperty', 'tags']
