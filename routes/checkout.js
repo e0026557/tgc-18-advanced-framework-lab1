@@ -39,13 +39,57 @@ router.get('/', checkIfAuthenticated, async function (req, res) {
   // Step 2: Create Stripe payment
   let metaData = JSON.stringify(meta);
   const payment = {
-    payment_method_types: ['card'],
+    payment_method_types: ['card', 'grabpay', 'paynow'],
+    billing_address_collection: 'required',
+    shipping_address_collection: {
+      allowed_countries: ['SG'],
+    },
     line_items: lineItems,
     success_url: process.env.STRIPE_SUCCESS_URL + "?sessionId={CHECKOUT_SESSION_ID}",
     cancel_url: process.env.STRIPE_CANCEL_URL,
     metadata: {
       orders: metaData
-    }
+    },
+    shipping_options: [{
+      shipping_rate_data: {
+        display_name: 'Normal Delivery',
+        type: 'fixed_amount',
+        fixed_amount: {
+          amount: 0,
+          currency: 'SGD'
+        },
+        delivery_estimate: {
+          minimum: {
+            unit: 'business_day',
+            value: '5'
+          },
+          maximum: {
+            unit: 'business_day',
+            value: '7'
+          }
+        }
+      }
+    },
+    {
+      shipping_rate_data: {
+        display_name: 'Express Delivery',
+        type: 'fixed_amount',
+        fixed_amount: {
+          amount: 1000,
+          currency: 'SGD'
+        },
+        delivery_estimate: {
+          minimum: {
+            unit: 'business_day',
+            value: '1'
+          },
+          maximum: {
+            unit: 'business_day',
+            value: '2'
+          }
+        }
+      }
+    }]
   };
 
   // Step 3: Register the session
