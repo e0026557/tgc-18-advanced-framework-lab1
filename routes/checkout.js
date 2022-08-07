@@ -55,7 +55,7 @@ router.get('/', checkIfAuthenticated, async function (req, res) {
         display_name: 'Normal Delivery',
         type: 'fixed_amount',
         fixed_amount: {
-          amount: 0,
+          amount: 500,
           currency: 'SGD'
         },
         delivery_estimate: {
