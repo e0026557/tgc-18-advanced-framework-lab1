@@ -126,6 +126,8 @@ router.post('/process_payment', express.raw({ type: 'application/json' }), async
       // metadata information
       const metadata = JSON.parse(event.data.object.metadata.orders);
       console.log(metadata);
+      const shippingRate = await Stripe.shippingRates.retrieve(stripeSession.shipping_rate); // retrieve selected shipping rate option
+      console.log(shippingRate)
       res.send({
         success: true
       });
