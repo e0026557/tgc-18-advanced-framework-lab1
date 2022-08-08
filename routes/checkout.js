@@ -89,7 +89,8 @@ router.get('/', checkIfAuthenticated, async function (req, res) {
           }
         }
       }
-    }]
+    }],
+    mode: 'payment'
   };
 
   // Step 3: Register the session
@@ -118,11 +119,21 @@ router.post('/process_payment', express.raw({ type: 'application/json' }), async
   // try to extract out the information and ensures that it is legit (actually comes from Stripe)
   try {
     event = Stripe.webhooks.constructEvent(payload, sigHeader, endpointSecret);
+    console.log('event => ', event)
 
-    if (event.type == 'checkout.session.completed') {
+    if (event.type == 'charge.succeeded') {
       // payment session information
       let stripeSession = event.data.object;
-      console.log(stripeSession);
+      console.log('charge succeeded => ', stripeSession);
+      res.send({
+        success: true
+      });
+    }
+
+    if (event.type == 'checkout.session.completed' || event.type == 'checkout.session.async_payment_succeeded') {
+      // payment session information
+      let stripeSession = event.data.object;
+      console.log('session completed => ', stripeSession);
       // metadata information
       const metadata = JSON.parse(event.data.object.metadata.orders);
       console.log(metadata);
