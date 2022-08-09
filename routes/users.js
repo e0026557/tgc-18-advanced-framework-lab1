@@ -95,7 +95,11 @@ router.post('/login', async function(req, res) {
           // Add flash message
           req.flash('success_messages', `Welcome back, ${user.get('username')}`);
 
-          res.redirect('/users/profile');
+          // Redirect user to intended path before login
+          const redirectTo = req.session.redirectTo || '/users/profile';
+          req.session.redirectTo = null; // clear redirectTo
+          // res.redirect('/users/profile');
+          res.redirect(redirectTo);
         }
         else {
           // Add flash message
